@@ -1,3 +1,7 @@
+# Chess Game
+
+This objective of this project to practice my vanilla javascript and OOP skills, without the help of any libraries or tutorials.
+
 # User Stories
 1. Create a 8*8 black and white Grid
 2. Create chest pieces that start in correct location
