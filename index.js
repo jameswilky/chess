@@ -11,27 +11,6 @@ let secondary_color = "#ffdf9e";
 
 let chessmen = []; // Hold living chest piece objects
 
-
-function calculate_movement_options(options, row, col, type, faction) {
-  let option = {};
-  let i = 0; //used to iterate list
-  //console.log(type, faction, row, col)
-
-  //Pawn movement logic
-  if (type == "pawn") {
-    if (faction == "black") {
-      option.row = row + 1;
-      option.col = col;
-      options[i++] = option;
-    }
-    if (faction == "white") {
-
-    }
-  }
-  return options
-
-  //return 2d array of possible locations
-}
 //Used for drawing
 function drawRect(x, y, color) {
   ctx.beginPath();
@@ -41,12 +20,8 @@ function drawRect(x, y, color) {
   ctx.closePath();
 }
 
-// //Used for clearing movement spaces
-// function clearRect(x,y,color) {
-//   ctx.
-// }
 //Initialize default locations
-let init_locations = [
+let default_locations = [
   { type: "rook", row: 0, col: 0, faction: "black" },
   { type: "knight", row: 0, col: 1, faction: "black" },
   { type: "bishop", row: 0, col: 2, faction: "black" },
@@ -83,7 +58,7 @@ let init_locations = [
 
 ]
 
-function init_board() {
+function initialize_board() {
   // Initialize grid
   let i, j, x, y = 0;
   let prev_color;
@@ -136,23 +111,60 @@ function Chessman(id, type, row, col, faction) {
     img.src = this.sprite;
   }
   this.show_movement_options = function () {
+    function calculate_movement_options(options, row, col, type, faction) {
+      //This function is used to determine the coordinates of each possible move for a selected tile
+      let option = {};
+      let i = 0; //used to iterate list
+      //console.log(type, faction, row, col)
+
+      //Pawn movement logic
+      if (type == "pawn") {
+        if (faction == "black") {
+          option.row = row + 1;
+          option.col = col;
+          options[i++] = option;
+        }
+        if (faction == "white") {
+
+        }
+      }
+      return options
+
+      //return 2d array of possible locations
+    }
     this.options = calculate_movement_options(this.options, this.position.logical.row, this.position.logical.col, this.type, this.faction);
     this.options.forEach(option => {
-      //Draw each available movement option
+      //Represent each available movement option with a highlighted tile
       drawRect((option.col * tile_size), (option.row * tile_size), "blue");
     })
-    // calculate_movement_options(this.position.logical.row, this.position.logical.col, this.type, this.faction);
   }
   this.clear_movement_options = function () {
+    function determine_previous_color(row, col) {
+      //Determines the previous color of a tile before it was highlighted
+
+      // If row and col are both of the same parity (both even or both odd)
+      if (((row % 2 == 0) && (col % 2 == 0)) || ((row % 2 != 0) && (col % 2 != 0))) {
+        // Then use primary color
+        return primary_color;
+      }
+      // If row and col are not of the same parity
+      else {
+        // Then use secondary color
+        return secondary_color;
+      }
+    }
     this.options.forEach(option => {
       console.log(option);
-      ctx.clearRect(option.col * tile_size, option.row * tile_size, tile_size, tile_size);
+      let color = determine_previous_color(option.row, option.col);
+      drawRect((option.col * tile_size), (option.row * tile_size), color);
     })
+    this.options = [];
+
   }
   this.selected = false;
 }
 
-function isSelected(coord, piece) {
+function contains_chessman(coord, piece) {
   if ((coord.x == piece.col) && (coord.y == piece.row)) {
     return true;
   }
@@ -160,8 +172,8 @@ function isSelected(coord, piece) {
 
 // Populate list of current chess pieces
 function init_chessmen() {
-  for (let id = 0; id < init_locations.length; id++) {
-    chessmen[id] = new Chessman(id, init_locations[id].type, init_locations[id].row, init_locations[id].col, init_locations[id].faction);
+  for (let id = 0; id < default_locations.length; id++) {
+    chessmen[id] = new Chessman(id, default_locations[id].type, default_locations[id].row, default_locations[id].col, default_locations[id].faction);
     chessmen[id].render();
   }
 }
@@ -174,10 +186,13 @@ function update_chessmen() {
       chessman.show_movement_options();
       //chessman.clear_movement_options();
     }
+    else {
+      chessman.clear_movement_options();
+    }
   });
 }
 
-init_board();
+initialize_board();
 init_chessmen();
 
 canvas.addEventListener('click', (e) => {
@@ -186,14 +201,42 @@ canvas.addEventListener('click', (e) => {
     x: Math.trunc(e.clientX / tile_size),
     y: Math.trunc(e.clientY / tile_size)
   };
+  console.log(pos.x, pos.y);
+  //Check all chessmen and check if clicked location matches a chessman location
   for (i = 0; i < chessmen.length; i++) {
-    if (isSelected(pos, chessmen[i].position.logical)) {
+    if (contains_chessman(pos, chessmen[i].position.logical)) {
+      //If true, select that chessman
       chessmen[i].selected = true;
-      update_chessmen();
     }
     else {
+      //Otherwise, that chessman was not selected
       chessmen[i].selected = false;
     }
   }
+  //Check all chessmen to find if one was selected
+  update_chessmen();
 
 })
+
+
+
+
+// //Game Loop
+// function update(progress) {
+// }
+// function draw() {
+// }
+
+// function loop(timestamp) {
+//   let progress = timestamp - lastRender;
+
+//   update(progress);
+//   draw();
+
+//   lastRender = timestamp;
+//   window.requestAnimationFrame(loop);
+// }
+
+// let lastRender = 0;
+
+// //window.requestAnimationFrame(loop);
