@@ -11,6 +11,15 @@ let secondary_color = "#ffdf9e";
 
 let chessmen = []; // Hold living chest piece objects
 
+
+//Used for drawing
+function drawRect(x, y, color) {
+  ctx.beginPath();
+  ctx.rect(x, y, block_size, block_size);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.closePath();
+}
 //Initialize default locations
 let init_locations = [
   { type: "rook", row: 0, col: 0, faction: "black" },
@@ -64,20 +73,15 @@ function init_board() {
     for (j = 0; j < n_rows; j++) {
       x = block_size * j;
 
-      ctx.beginPath();
-      ctx.rect(x, y, block_size, block_size);
-
       if (prev_color == primary_color) { //If last block black, make this block #ffcf7c
         prev_color = secondary_color;
-        ctx.fillStyle = secondary_color;
       }
       else if (prev_color == secondary_color) { //If last block #ffcf7c, make this block black
         prev_color = primary_color;
-        ctx.fillStyle = primary_color;
       }
 
-      ctx.fill();
-      ctx.closePath();
+      drawRect(x, y, prev_color);
+
     }
   }
 }
@@ -105,6 +109,9 @@ function Chessman(id, type, row, col, faction) {
       ctx.drawImage(img, x, y);
     }
     img.src = this.sprite;
+  }
+  this.show_movement_options = function () {
+    drawRect(0, 60, "blue");
   }
   this.selected = false;
 }
@@ -146,7 +153,7 @@ canvas.addEventListener('click', (e) => {
   for (i = 0; i < chessmen.length; i++) {
     if (isSelected(pos, chessmen[i].position.logical)) {
       chessmen[i].selected = true;
-      console.log(chessmen[i].name)
+      update_chessmen();
     }
     else {
       chessmen[i].selected = false;
