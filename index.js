@@ -4,8 +4,8 @@ const ctx = canvas.getContext("2d");
 canvas.height = 480;
 canvas.width = 480;
 
-const n_rows = 8;
-const tile_size = canvas.height / n_rows; // 60
+const N = 8;
+const TILE_SIZE = canvas.height / N; // 60
 let primary_color = "#a87e2b";
 let secondary_color = "#ffdf9e";
 
@@ -14,7 +14,7 @@ let chessmen = []; // Hold living chest piece objects
 //Used for drawing
 function drawRect(x, y, color) {
   ctx.beginPath();
-  ctx.rect(x, y, tile_size, tile_size);
+  ctx.rect(x, y, TILE_SIZE, TILE_SIZE);
   ctx.fillStyle = color;
   ctx.fill();
   ctx.closePath();
@@ -62,16 +62,16 @@ function initialize_board() {
   // Initialize grid
   let i, j, x, y = 0;
   let prev_color;
-  for (i = 0; i < n_rows; i++) {
-    y = tile_size * i;
+  for (i = 0; i < N; i++) {
+    y = TILE_SIZE * i;
     if (i % 2 == 0) { //If even, start with a black grid
       prev_color = secondary_color;
     }
     else { //If odd, start with a #ffcf7c grid
       prev_color = primary_color;
     }
-    for (j = 0; j < n_rows; j++) {
-      x = tile_size * j;
+    for (j = 0; j < N; j++) {
+      x = TILE_SIZE * j;
 
       if (prev_color == primary_color) { //If last block black, make this block #ffcf7c
         prev_color = secondary_color;
@@ -93,7 +93,7 @@ function Chessman(id, type, row, col, faction) {
   this.position = {
     logical: { col: col, row: row },
     graphical: { //calculate position of chest piece
-      x: (col * tile_size), y: (row * tile_size)
+      x: (col * TILE_SIZE), y: (row * TILE_SIZE)
     }
   }
   this.faction = faction;
@@ -113,29 +113,56 @@ function Chessman(id, type, row, col, faction) {
   this.show_movement_options = function () {
     function calculate_movement_options(options, row, col, type, faction) {
       //This function is used to determine the coordinates of each possible move for a selected tile
+
       let option = {};
-      let i = 0; //used to iterate list
-      //console.log(type, faction, row, col)
+      let j = 0;
+      let i = 0; //used to iterate through list of options
+      console.log(type, faction, row, col)
+
+      function add_option(row, col) {
+        //Used to create a new option and then add that option to the array of options
+        option = {};
+        option.row = row;
+        option.col = col;
+        options[i] = option;
+        i++;
+      }
 
       //Pawn movement logic
       if (type == "pawn") {
         if (faction == "black") {
-          option.row = row + 1;
-          option.col = col;
-          options[i++] = option;
+          add_option(row + 1, col);
         }
         if (faction == "white") {
+          add_option(row - 1, col)
 
         }
       }
-      return options
 
-      //return 2d array of possible locations
+      if (type == "rook") {
+        for (j = 0; j < N; j++) {
+          add_option(row + j, col);
+        }
+        for (j = 0; j < N; j++) {
+          add_option(row, col + j);
+        }
+        for (j = 0; j < N; j++) {
+          add_option(row - j, col);
+        }
+        for (j = 0; j < N; j++) {
+          add_option(row, col - j);
+        }
+
+      }
+      console.log(options);
+      return options //return array of options containing locations to highlight
+
+
     }
     this.options = calculate_movement_options(this.options, this.position.logical.row, this.position.logical.col, this.type, this.faction);
     this.options.forEach(option => {
       //Represent each available movement option with a highlighted tile
-      drawRect((option.col * tile_size), (option.row * tile_size), "blue");
+      drawRect((option.col * TILE_SIZE), (option.row * TILE_SIZE), "blue");
     })
   }
   this.clear_movement_options = function () {
@@ -154,9 +181,8 @@ function Chessman(id, type, row, col, faction) {
       }
     }
     this.options.forEach(option => {
-      console.log(option);
       let color = determine_previous_color(option.row, option.col);
-      drawRect((option.col * tile_size), (option.row * tile_size), color);
+      drawRect((option.col * TILE_SIZE), (option.row * TILE_SIZE), color);
     })
     this.options = [];
 
@@ -198,10 +224,9 @@ init_chessmen();
 canvas.addEventListener('click', (e) => {
   let pos = {
     //Turn a graphic based x,y position into a logical one on an 8*8 grid
-    x: Math.trunc(e.clientX / tile_size),
-    y: Math.trunc(e.clientY / tile_size)
+    x: Math.trunc(e.clientX / TILE_SIZE),
+    y: Math.trunc(e.clientY / TILE_SIZE)
   };
-  console.log(pos.x, pos.y);
   //Check all chessmen and check if clicked location matches a chessman location
   for (i = 0; i < chessmen.length; i++) {
     if (contains_chessman(pos, chessmen[i].position.logical)) {
