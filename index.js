@@ -27,32 +27,32 @@ function drawRect(x, y, color) {
 //Initialize default locations
 let default_locations = [
   { tile: 0, type: "rook", row: 0, col: 0, faction: "black" },
-  //{ tile: 1, type: "knight", row: 0, col: 1, faction: "black" },
+  { tile: 1, type: "knight", row: 0, col: 1, faction: "black" },
   { tile: 2, type: "bishop", row: 0, col: 2, faction: "black" },
   { tile: 3, type: "king", row: 0, col: 3, faction: "black" },
   { tile: 4, type: "queen", row: 0, col: 4, faction: "black" },
   { tile: 5, type: "bishop", row: 0, col: 5, faction: "black" },
-  //{ tile: 6, type: "knight", row: 0, col: 6, faction: "black" },
+  { tile: 6, type: "knight", row: 0, col: 6, faction: "black" },
   { tile: 7, type: "rook", row: 0, col: 7, faction: "black" },
-  //{ tile: 8, type: "pawn", row: 1, col: 0, faction: "black" },
-  // { tile: 9, type: "pawn", row: 1, col: 1, faction: "black" },
-  // { tile: 10, type: "pawn", row: 1, col: 2, faction: "black" },
-  // { tile: 11, type: "pawn", row: 1, col: 3, faction: "black" },
-  // { tile: 12, type: "pawn", row: 1, col: 4, faction: "black" },
-  // { tile: 13, type: "pawn", row: 1, col: 5, faction: "black" },
-  // { tile: 14, type: "pawn", row: 1, col: 6, faction: "black" },
-  // { tile: 15, type: "pawn", row: 1, col: 7, faction: "black" },
+  { tile: 8, type: "pawn", row: 1, col: 0, faction: "black" },
+  { tile: 9, type: "pawn", row: 1, col: 1, faction: "black" },
+  { tile: 10, type: "pawn", row: 1, col: 2, faction: "black" },
+  { tile: 11, type: "pawn", row: 1, col: 3, faction: "black" },
+  { tile: 12, type: "pawn", row: 1, col: 4, faction: "black" },
+  { tile: 13, type: "pawn", row: 1, col: 5, faction: "black" },
+  { tile: 14, type: "pawn", row: 1, col: 6, faction: "black" },
+  { tile: 15, type: "pawn", row: 1, col: 7, faction: "black" },
 
-  // { tile: 48, type: "pawn", row: 6, col: 0, faction: "white" },
-  // { tile: 49, type: "pawn", row: 6, col: 1, faction: "white" },
-  // { tile: 50, type: "pawn", row: 6, col: 2, faction: "white" },
-  // { tile: 51, type: "pawn", row: 6, col: 3, faction: "white" },
-  // { tile: 52, type: "pawn", row: 6, col: 4, faction: "white" },
-  // { tile: 53, type: "pawn", row: 6, col: 5, faction: "white" },
-  // { tile: 54, type: "pawn", row: 6, col: 6, faction: "white" },
-  // { tile: 55, type: "pawn", row: 6, col: 7, faction: "white" },
+  { tile: 48, type: "pawn", row: 6, col: 0, faction: "white" },
+  { tile: 49, type: "pawn", row: 6, col: 1, faction: "white" },
+  { tile: 50, type: "pawn", row: 6, col: 2, faction: "white" },
+  { tile: 51, type: "pawn", row: 6, col: 3, faction: "white" },
+  { tile: 52, type: "pawn", row: 6, col: 4, faction: "white" },
+  { tile: 53, type: "pawn", row: 6, col: 5, faction: "white" },
+  { tile: 54, type: "pawn", row: 6, col: 6, faction: "white" },
+  { tile: 55, type: "pawn", row: 6, col: 7, faction: "white" },
   { tile: 56, type: "rook", row: 7, col: 0, faction: "white" },
-  //{ tile: 57, type: "knight", row: 7, col: 1, faction: "white" },
+  { tile: 57, type: "knight", row: 7, col: 1, faction: "white" },
   { tile: 58, type: "bishop", row: 7, col: 2, faction: "white" },
   { tile: 59, type: "king", row: 7, col: 3, faction: "white" },
   { tile: 60, type: "queen", row: 7, col: 4, faction: "white" },
@@ -108,10 +108,9 @@ function calculate_movement_options(options, row, col, type, faction) {
     //Check if target tile contains a chessman of same faction
     let isFriendly = false;
     let isEnemy = false;
-    console.log(row, col);
+
     chessmen.forEach(chessman => {
       if (chessman.position.logical.row == row && chessman.position.logical.col == col) { //Check if position is occupied
-        console.log(chessman.name);
         if (chessman.faction == faction) {
           isFriendly = true;
         }
@@ -121,7 +120,7 @@ function calculate_movement_options(options, row, col, type, faction) {
       }
     })
 
-    //if tile does not contain friendly chessmen, or its an enemy create new option
+    //if tile does not contain friendly chessmen, or if its an enemy create new option
     if (!isFriendly || isEnemy) {
       option.row = row;
       option.col = col;
@@ -141,20 +140,81 @@ function calculate_movement_options(options, row, col, type, faction) {
       check_tile(row - 1, col);
     }
   }
-
   if (type == "rook") {
-    for (j = 0; j < N; j++) {// Down
+    for (j = 0; j < N; j++) {// South
       if (check_tile(row + j + 1, col) == true) break
     }
-    for (j = 0; j < N; j++) {// Right
+    for (j = 0; j < N; j++) {// East
       if (check_tile(row, col + j + 1) == true) break
     }
-    for (j = 0; j < N; j++) {// Up
+    for (j = 0; j < N; j++) {// North
       if (check_tile(row - j - 1, col) == true) break
     }
-    for (j = 0; j < N; j++) {// Left
+    for (j = 0; j < N; j++) {// West
       if (check_tile(row, col - j - 1) == true) break
     }
+  }
+  if (type == "bishop") {
+    for (j = 0; j < N; j++) { // South East
+      if (check_tile(row + 1 + j, col + 1 + j) == true) break
+    }
+    for (j = 0; j < N; j++) { // South West
+      if (check_tile(row + 1 + j, col - 1 - j) == true) break
+    }
+    for (j = 0; j < N; j++) { // North East
+      if (check_tile(row - 1 - j, col + 1 + j) == true) break
+    }
+    for (j = 0; j < N; j++) { // North west
+      if (check_tile(row - 1 - j, col - 1 - j) == true) break
+    }
+  }
+  if (type == "queen") {
+    for (j = 0; j < N; j++) { // South East
+      if (check_tile(row + 1 + j, col + 1 + j) == true) break
+    }
+    for (j = 0; j < N; j++) { // South West
+      if (check_tile(row + 1 + j, col - 1 - j) == true) break
+    }
+    for (j = 0; j < N; j++) { // North East
+      if (check_tile(row - 1 - j, col + 1 + j) == true) break
+    }
+    for (j = 0; j < N; j++) { // North west
+      if (check_tile(row - 1 - j, col - 1 - j) == true) break
+    }
+    for (j = 0; j < N; j++) {// South
+      if (check_tile(row + j + 1, col) == true) break
+    }
+    for (j = 0; j < N; j++) {// East
+      if (check_tile(row, col + j + 1) == true) break
+    }
+    for (j = 0; j < N; j++) {// North
+      if (check_tile(row - j - 1, col) == true) break
+    }
+    for (j = 0; j < N; j++) {// West
+      if (check_tile(row, col - j - 1) == true) break
+    }
+  }
+  if (type == "king") {
+    check_tile(row + 1, col + 1) //South East
+    check_tile(row + 1, col - 1) //South West
+    check_tile(row - 1, col + 1) // North East
+    check_tile(row - 1, col - 1) //North West
+    check_tile(row + 1, col) //south
+    check_tile(row, col + 1) //east
+    check_tile(row - 1, col) //north
+    check_tile(row, col - 1) //west
+
+  }
+  if (type == "knight") {
+    // Check each tile in clockwise order
+    check_tile(row - 2, col + 1)
+    check_tile(row - 1, col + 2)
+    check_tile(row + 1, col + 2)
+    check_tile(row + 2, col + 1)
+    check_tile(row + 2, col - 1)
+    check_tile(row + 1, col - 2)
+    check_tile(row - 1, col - 2)
+    check_tile(row - 2, col - 1)
   }
 
   return options //return array of options containing locations to highlight
@@ -254,6 +314,7 @@ canvas.addEventListener('click', (e) => {
     x: Math.trunc(e.clientX / TILE_SIZE),
     y: Math.trunc(e.clientY / TILE_SIZE)
   };
+
   //Check all chessmen and check if clicked location matches a chessman location
   for (i = 0; i < chessmen.length; i++) {
     if (contains_chessman(pos, chessmen[i].position.logical)) {
