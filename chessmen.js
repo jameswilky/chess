@@ -8,6 +8,7 @@ function init_chessmen(items) {
   }
 }
 
+//Compare two row/col coordinates
 function contains_chessman(coord, piece) {
   if ((coord.x == piece.col) && (coord.y == piece.row)) {
     return true;
@@ -179,50 +180,56 @@ function Chessman(id, type, row, col, faction) {
       drawRect(markers_ctx, (option.col * TILE_SIZE), (option.row * TILE_SIZE), "blue");
     })
   }
-  this.clear_movement_options = function () {
-    markers_ctx.clearRect(0, 0, HEIGHT, WIDTH);
-    // this.options.forEach(option => {
-    //   markers_ctx.clearRect((option.col * TILE_SIZE), (option.row * TILE_SIZE), TILE_SIZE, TILE_SIZE);
-    // })
-  }
   this.selected = false;
-  this.hovered = false;
+  this.hover = false;
 }
-
 
 // Update location of chest pieces
 function render_markers() {
+  //Clear all markers
+  markers_ctx.clearRect(0, 0, HEIGHT, WIDTH);
+
+  //find chessman that matches mouse location and show movement markers
   chessmen.forEach(chessman => {
-    chessman.clear_movement_options();
-  });
-  chessmen.forEach(chessman => {
-    if (chessman.selected == true) {
+    if (chessman.hover == true) {
       chessman.show_movement_options();
     }
   });
 }
 
-
-//refactor
+let last_pos = {
+  x: -1, //will never be this value
+  y: -1
+}
 chessmen_layer.addEventListener('mousemove', (e) => {
-  //
   let pos = {
     //Turn a graphic based x,y position into a logical one on an 8*8 grid
     x: Math.trunc(e.clientX / TILE_SIZE),
     y: Math.trunc(e.clientY / TILE_SIZE)
   };
+
+  //Check If mouse moved and is still on same tile
+  if ((pos.x == last_pos.x) && (pos.y == last_pos.y)) {
+    //if on same tile, reset listener for next mouse movement
+    return
+  }
+
   //Check all chessmen and check if clicked location matches a chessman location
   for (i = 0; i < chessmen.length; i++) {
     if (contains_chessman(pos, chessmen[i].position.logical)) {
       //If true, select that chessman
-      chessmen[i].selected = true;
+      chessmen[i].hover = true;
     }
     else {
       //Otherwise, that chessman was not selected
-      chessmen[i].selected = false;
+      chessmen[i].hover = false;
     }
   }
-  //Check all chessmen to find if one was selected
+
+  //update last tile reference
+  last_pos.x = pos.x;
+  last_pos.y = pos.y;
+
   render_markers();
 
 })
