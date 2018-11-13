@@ -19,3 +19,7 @@ canvas {
 #chessmen_layer {
   position: absolute; left : 0; z-index:2;
 }
+
+#selector {
+  position: absolute; left : 0; z-index:3; background-color: "green"; color:"purple";
+}
