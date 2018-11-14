@@ -1,10 +1,3 @@
-/*TODO, 
-change chessman layer to a div which holds all the dynamically drawn 
-
-*/
-
-
-
 let chessmen = []; // Hold living chest piece objects
 
 // Populate list of current chess pieces
@@ -14,7 +7,6 @@ function init_chessmen(items) {
     chessmen[id].render(chessmen_ctx);
   }
 }
-
 
 //Chest piece constructor
 function Chessman(id, type, row, col, faction) {
@@ -30,25 +22,21 @@ function Chessman(id, type, row, col, faction) {
   this.faction = faction;
   this.sprite = "/images/" + type + "_" + faction + ".png";
   this.options = []; // holds objects containing possible locations to move
-  this.render = function (ctx) {
+  this.render = function () {
     //Draws the chest piece
     let img = new Image();
 
     let x = this.position.graphical.x;
     let y = this.position.graphical.y;
 
-    if (ctx == selector_ctx) {
-      x = 0;
-      y = 0;
-    }
     img.onload = function () {
       //Loads when img.src is called
-      ctx.drawImage(img, x, y);
+      chessmen_ctx.drawImage(img, x, y);
     }
     img.src = this.sprite;
   }
-  this.derender = function (ctx) {
-    ctx.clearRect(this.position.graphical.x, this.position.graphical.y, TILE_SIZE, TILE_SIZE);
+  this.derender = function () {
+    chessmen_ctx.clearRect(this.position.graphical.x, this.position.graphical.y, TILE_SIZE, TILE_SIZE);
   }
   this.calculate_movement_options = function () {
     //This function is used to determine the coordinates of each possible move for a selected tile
@@ -194,17 +182,8 @@ function Chessman(id, type, row, col, faction) {
   this.selected = false;
   this.hover = false;
   this.isDragging = false;
-
-  // //Define canvas that chest piece sits on
-  // let canvas = document.createElement('canvas');
-  // canvas.id = this.id;
-  // canvas.width = TILE_SIZE
-  // canvas.height = TILE_SIZE;
-  // canvas.style.zIndex = this.id + 3;
-  // canvas.style.position = "absolute";
-  // canvas.style.left = 0;
-  // this.layer = canvas;
 }
+
 // Update location of chest pieces
 function render_markers() {
   //Clear all markers
@@ -218,151 +197,40 @@ function render_markers() {
   });
 }
 
+function moveIsValid(r1, r2, c1, c2, chessman) {
+  let valid = false;
 
-//Compare two row/col coordinates
-function coordsMatch(coord, piece) {
-  let xmin = piece.x;
-  let xmax = piece.x + TILE_SIZE;
-
-  let ymin = piece.y;
-  let ymax = piece.y + TILE_SIZE;
-
-  if (
-    (coord.x >= xmin) &&
-    (coord.x < xmax) &&
-    (coord.y >= ymin) &&
-    (coord.y < ymax)
-  ) {
-    return true
+  if ((r1 == r2) && (c1 == c2)) {
+    // if logical position is the same, no move was made
+    console.log("invalid move");
+    valid = false;
   }
-}
-
-chessmen_layer.addEventListener('mousemove', (e) => {
-  if (dragOk == false) {
-    let pos = {
-      //Turn a graphic based x,y position into a logical one on an 8*8 grid
-      x: e.clientX,
-      y: e.clientY
-    };
-    //Check all chessmen and check if clicked location matches a chessman location
-    for (i = 0; i < chessmen.length; i++) {
-      if (coordsMatch(pos, chessmen[i].position.graphical)) {
-        //If true, select that chessman
-        chessmen[i].hover = true;
-      }
-      else {
-        //Otherwise, that chessman was not selected
-        chessmen[i].hover = false;
-      }
+  chessman.options.forEach(option => {
+    if (option.row == r2 && option.col == c2) {
+      //todo check faction
+      console.log("valid move")
+      valid = true;
     }
-
-
-    render_markers();
-  }
-
-
-
-})
-
-let dragOk = false;
-let startX;
-let startY;
-//listen for mouse events
-chessmen_layer.onmousedown = myDown;
-selector.onmouseup = myUp;
-selector.onmousemove = myMove;
-
-function myDown(e) {
-
-  //todo draw new selected chessman canvas - transparent background
-  //render the image on to the new canvas
-  //clear the image on the main canvas
-  //
-
-
-  //tell browser we're handling this mouse event
-  e.preventDefault();
-  e.stopPropagation();
-
-  let pos = {
-    //Turn a graphic based x,y position into a logical one on an 8*8 grid
-    x: Math.trunc(e.clientX),
-    y: Math.trunc(e.clientY)
-  };
-  dragOk = false;
-  //Check all chessmen and check if clicked location matches a chessman location
-  for (i = 0; i < chessmen.length; i++) {
-    if (coordsMatch(pos, chessmen[i].position.graphical)) {
-      //If true, select that chessman
-      chessmen[i].isDragging = true;
-      dragOk = true;
-
-      chessmen[i].derender(chessmen_ctx) //clear from chessmen canvas
-      selector.style.top = e.clientY - TILE_SIZE / 2 + "px";
-      selector.style.left = e.clientX - TILE_SIZE / 2 + "px";
-      chessmen[i].render(selector_ctx)//render on selector canvas
-    }
-  }
-  startX = e.clientX;
-  startY = e.clientY;
-
-}
-
-function myUp(e) {
-  //todo clear slected chessman canvas
-  //re render chessman and snap to grid
-
-  //tell browser we're handling this mouse event
-  e.preventDefault();
-  e.stopPropagation();
-
-  //clear selector layer
-  selector_ctx.clearRect(0, 0, TILE_SIZE, TILE_SIZE);
-
-  //clear all dragging flags
-  dragOk = false;
-  //rerender chessmen
-  chessmen.forEach(chessman => {
-    chessman.isDragging = false;
-    chessman.render(chessmen_ctx);
-
   })
+
+  return valid
 }
-
-function myMove(e) {
-  if (dragOk) {
-    //tell browser we're handling this mouse event
-    e.preventDefault();
-    e.stopPropagation();
-    let x = parseInt(selector.style.top.replace(/\D/g, '')) + TILE_SIZE / 2; //remove 'px'
-    let y = parseInt(selector.style.left.replace(/\D/g, '')) + TILE_SIZE / 2; //remove 'px'
-
-
-    //todo just move selected chess piece canvas
-    let top = parseInt(selector.style.top.replace(/\D/g, '')) + TILE_SIZE / 2; //remove 'px'
-    let left = parseInt(selector.style.left.replace(/\D/g, '')) + TILE_SIZE / 2; //remove 'px'
-
-    let pos = {
-      x: e.clientX,
-      y: e.clientY
-    }
-    let dpos = {
-      x: pos.x - startX,
-      y: pos.y - startY
-    };
-
-    //update position
-    top += (dpos.y);
-    left += (dpos.x);
-
-    //update css
-    selector.style.top = top - TILE_SIZE / 2 + 'px';
-    selector.style.left = left - TILE_SIZE / 2 + 'px';
-
-    startX = pos.x;
-    startY = pos.y;
-
+//Update graphical and logical position
+function moveChessman(col, row, chessman) {
+  console.log(col, row);
+  console.log(chessman.position.logical.col, chessman.position.logical.row)
+  if (moveIsValid(chessman.position.logical.row, row, chessman.position.logical.col, col, chessman)) {
+    //if valid, render at new position and update logical position
+    console.log("moving")
+    chessman.position.logical.col = col;
+    chessman.position.logical.row = row;
+    chessman.position.graphical.x = chessman.position.logical.col * TILE_SIZE;
+    chessman.position.graphical.y = chessman.position.logical.row * TILE_SIZE;
+    chessman.render();
   }
+  else {
+    //re-render original position
+    chessman.render();
+  }
+
 }
-
-

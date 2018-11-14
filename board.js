@@ -24,14 +24,6 @@ const chessmen_ctx = chessmen_layer.getContext("2d");
 chessmen_layer.height = HEIGHT;
 chessmen_layer.width = WIDTH;
 
-//Define selector layer
-const selector = document.getElementById("selector");
-const selector_ctx = selector.getContext("2d");
-selector.height = TILE_SIZE;
-selector.width = TILE_SIZE;
-
-//drawRect(selector_ctx, 0, 0, "orange");
-
 //Used for drawing
 function drawRect(ctx, x, y, color) {
   ctx.beginPath();

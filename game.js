@@ -41,6 +41,7 @@ init_chessmen(default_locations);
 let turn = 0;
 let IsWhiteTurn = false;
 let IsBlackTurn = false;
+let game = true;
 
 function set_turn() {
   if (turn % 2 == 0) {
@@ -59,6 +60,7 @@ function set_turn() {
 chessmen.forEach(chessman => {
   chessman.calculate_movement_options();
 })
+
 
 set_turn();
 /*
