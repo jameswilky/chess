@@ -98,7 +98,7 @@ chessmen_layer.addEventListener('mousedown', (e) => {
         }
 
         //Update chessman logical location and snap to grid
-        moveChessman(dest.x, dest.y, chessman);
+        chessman.move(dest.x, dest.y)
         chessmen_layer.onmouseup = null;
 
         dragging = false; // allow marker rendering to continue

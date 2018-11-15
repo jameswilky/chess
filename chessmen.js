@@ -39,6 +39,7 @@ function Chessman(id, type, row, col, faction) {
   }
   this.calculate_movement_options = function () {
     //This function is used to determine the coordinates of each possible move for a selected tile
+    this.options = []; //clear last options
     let j = 0;
     let i = 0; //used to iterate through list of options
     //console.log(type, faction, row, col)
@@ -179,7 +180,39 @@ function Chessman(id, type, row, col, faction) {
     })
   }
   this.hover = false;
-  this.move = function () {
+  //Update graphical and logical position
+  this.move = function (col, row) {
+
+    if (moveIsValid(this.position.logical.row, row, this.position.logical.col, col, this)) {
+      //If valid, Check if enemy chessman has been killed
+
+      //check if desination contains an enemy
+      let target = chessmen.find(chessman => {
+        return (chessman.position.logical.row == row && chessman.position.logical.col == col)
+      })
+      //If destination contains emeny, remove it from list of active chessmen
+      if (target) { chessmen.splice(chessmen.indexOf(target), 1); }
+
+      // then render at new position and update logical position
+      //console.log("Changed position of", chessman, "from row:", chessman.position.logical.row, " col:", chessman.position.logical.col, " to row:", row, "col:", col)
+
+      this.derender();
+      this.position.logical.col = col;
+      this.position.logical.row = row;
+      this.position.graphical.x = this.position.logical.col * TILE_SIZE;
+      this.position.graphical.y = this.position.logical.row * TILE_SIZE;
+      this.derender();
+      this.render();
+
+      // // trigger movement event
+      let event = new CustomEvent('moved');
+      document.dispatchEvent(event);
+    }
+    else {
+      //re-render original position
+      this.render();
+    }
+
 
   }
 }
@@ -195,6 +228,8 @@ function render_markers() {
       chessman.show_movement_options();
     }
   });
+
+
 }
 
 function moveIsValid(r1, r2, c1, c2, chessman) {
@@ -212,37 +247,36 @@ function moveIsValid(r1, r2, c1, c2, chessman) {
   })
   return valid
 }
-//Update graphical and logical position
-function moveChessman(col, row, chessman) {
-  if (moveIsValid(chessman.position.logical.row, row, chessman.position.logical.col, col, chessman)) {
-    //If valid, Check if enemy chessman has been killed
-    //check if desination contains an enemy
-    let target = chessmen.find(chessman => {
-      return (chessman.position.logical.row == row && chessman.position.logical.col == col)
-    })
-    //If destination contains emeny, remove it from list of active chessmen
-    if (target) { chessmen.splice(chessmen.indexOf(target), 1); }
+// //Update graphical and logical position
+// function moveChessman(col, row, chessman) {
+//   if (moveIsValid(chessman.position.logical.row, row, chessman.position.logical.col, col, chessman)) {
+//     //If valid, Check if enemy chessman has been killed
+//     //check if desination contains an enemy
+//     let target = chessmen.find(chessman => {
+//       return (chessman.position.logical.row == row && chessman.position.logical.col == col)
+//     })
+//     //If destination contains emeny, remove it from list of active chessmen
+//     if (target) { chessmen.splice(chessmen.indexOf(target), 1); }
 
-    // then render at new position and update logical position
-    //console.log("Changed position of", chessman, "from row:", chessman.position.logical.row, " col:", chessman.position.logical.col, " to row:", row, "col:", col)
+//     // then render at new position and update logical position
+//     //console.log("Changed position of", chessman, "from row:", chessman.position.logical.row, " col:", chessman.position.logical.col, " to row:", row, "col:", col)
 
-    chessman.derender();
-    chessman.position.logical.col = col;
-    chessman.position.logical.row = row;
-    chessman.position.graphical.x = chessman.position.logical.col * TILE_SIZE;
-    chessman.position.graphical.y = chessman.position.logical.row * TILE_SIZE;
-    chessman.derender();
-    chessman.render();
+//     chessman.derender();
+//     chessman.position.logical.col = col;
+//     chessman.position.logical.row = row;
+//     chessman.position.graphical.x = chessman.position.logical.col * TILE_SIZE;
+//     chessman.position.graphical.y = chessman.position.logical.row * TILE_SIZE;
+//     chessman.derender();
+//     chessman.render();
+
+//     // // trigger movement event
+//     let event = new CustomEvent('moved');
+//     document.dispatchEvent(event);
+//   }
+//   else {
+//     //re-render original position
+//     chessman.render();
+//   }
 
 
-    // // trigger movement event
-    let event = new CustomEvent('moved');
-    document.dispatchEvent(event);
-  }
-  else {
-    //re-render original position
-    chessman.render();
-  }
-
-
-}
+// }

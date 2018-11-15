@@ -8,23 +8,23 @@ let default_locations = [
   { tile: 5, type: "bishop", row: 0, col: 5, faction: "black" },
   { tile: 6, type: "knight", row: 0, col: 6, faction: "black" },
   { tile: 7, type: "rook", row: 0, col: 7, faction: "black" },
-  // { tile: 8, type: "pawn", row: 1, col: 0, faction: "black" },
-  // { tile: 9, type: "pawn", row: 1, col: 1, faction: "black" },
-  // { tile: 10, type: "pawn", row: 1, col: 2, faction: "black" },
-  // { tile: 11, type: "pawn", row: 1, col: 3, faction: "black" },
-  // { tile: 12, type: "pawn", row: 1, col: 4, faction: "black" },
-  // { tile: 13, type: "pawn", row: 1, col: 5, faction: "black" },
-  // { tile: 14, type: "pawn", row: 1, col: 6, faction: "black" },
-  // { tile: 15, type: "pawn", row: 1, col: 7, faction: "black" },
+  { tile: 8, type: "pawn", row: 1, col: 0, faction: "black" },
+  { tile: 9, type: "pawn", row: 1, col: 1, faction: "black" },
+  { tile: 10, type: "pawn", row: 1, col: 2, faction: "black" },
+  { tile: 11, type: "pawn", row: 1, col: 3, faction: "black" },
+  { tile: 12, type: "pawn", row: 1, col: 4, faction: "black" },
+  { tile: 13, type: "pawn", row: 1, col: 5, faction: "black" },
+  { tile: 14, type: "pawn", row: 1, col: 6, faction: "black" },
+  { tile: 15, type: "pawn", row: 1, col: 7, faction: "black" },
 
-  // { tile: 48, type: "pawn", row: 6, col: 0, faction: "white" },
-  // { tile: 49, type: "pawn", row: 6, col: 1, faction: "white" },
-  // { tile: 50, type: "pawn", row: 6, col: 2, faction: "white" },
-  // { tile: 51, type: "pawn", row: 6, col: 3, faction: "white" },
-  // { tile: 52, type: "pawn", row: 6, col: 4, faction: "white" },
-  // { tile: 53, type: "pawn", row: 6, col: 5, faction: "white" },
-  // { tile: 54, type: "pawn", row: 6, col: 6, faction: "white" },
-  // { tile: 55, type: "pawn", row: 6, col: 7, faction: "white" },
+  { tile: 48, type: "pawn", row: 6, col: 0, faction: "white" },
+  { tile: 49, type: "pawn", row: 6, col: 1, faction: "white" },
+  { tile: 50, type: "pawn", row: 6, col: 2, faction: "white" },
+  { tile: 51, type: "pawn", row: 6, col: 3, faction: "white" },
+  { tile: 52, type: "pawn", row: 6, col: 4, faction: "white" },
+  { tile: 53, type: "pawn", row: 6, col: 5, faction: "white" },
+  { tile: 54, type: "pawn", row: 6, col: 6, faction: "white" },
+  { tile: 55, type: "pawn", row: 6, col: 7, faction: "white" },
   { tile: 56, type: "rook", row: 7, col: 0, faction: "white" },
   { tile: 57, type: "knight", row: 7, col: 1, faction: "white" },
   { tile: 58, type: "bishop", row: 7, col: 2, faction: "white" },
@@ -60,7 +60,6 @@ function set_turn() {
 function determineAIOptions() {
   let AIOptions = [];
   let i = 0;
-
   chessmen.forEach(chessman => {
     if (chessman.faction == 'black') {
       chessman.options.forEach(option => {
@@ -80,8 +79,10 @@ function determineAIOptions() {
 function AIMove(options) {
   //Return a random choice
   let choice = options[Math.floor(Math.random() * options.length)];
-  moveChessman(choice.col, choice.row, choice.chessman)
+  choice.chessman.move(choice.col, choice.row)
 }
+
+
 //Set up board
 initialize_board();
 init_chessmen(default_locations);
@@ -101,10 +102,8 @@ document.addEventListener('moved', function (event) {
   if (IsBlackTurn) {
     //Run black turn AI
     chessmen.forEach(chessman => {
-      chessmen.options = []; //clear previous options
       chessman.calculate_movement_options(); //assign new options
     })
-
     AIOptions = determineAIOptions();
     AIMove(AIOptions);
   }
