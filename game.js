@@ -36,8 +36,6 @@ let default_locations = [
 
 ]
 
-init_chessmen(default_locations);
-
 let turn = 0;
 let IsWhiteTurn = false;
 let IsBlackTurn = false;
@@ -57,22 +55,28 @@ function set_turn() {
   turn += 1;
 }
 
+//Set up board
+initialize_board();
+init_chessmen(default_locations);
 chessmen.forEach(chessman => {
   chessman.calculate_movement_options();
 })
-
-
 set_turn();
-/*
-Draw board
-Draw chest pieces
-Calculate available movement options
 
+// Listen for movement
+document.addEventListener('moved', function (event) {
+  //Calculate new movement positions
+  chessmen.forEach(chessman => {
+    chessman.calculate_movement_options();
+  })
+  //Change turn control
+  set_turn();
+  if (IsBlackTurn) {
+    //Run black turn AI
+    console.log("Black thinking...");
 
---
-
-set_turn();
- 
-*/
-
+    console.log("Black moved");
+    set_turn();
+  }
+}, false);
 

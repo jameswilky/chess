@@ -60,4 +60,3 @@ function initialize_board() {
   }
 }
 
-initialize_board();

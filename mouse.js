@@ -1,3 +1,10 @@
+let selector = document.createElement("img");
+let dragging = false;
+
+selector.ondragstart = function () {
+  return false;
+};
+
 //Compare two row/col coordinates
 function coordsMatch(coord, piece) {
   let xmin = piece.x;
@@ -16,100 +23,88 @@ function coordsMatch(coord, piece) {
   }
 }
 
+//Listen for when we hover over a chest piece, then draw the movement options
 chessmen_layer.addEventListener('mousemove', (e) => {
-  if (dragOk == false) {
+  if (dragging == false) {
     let pos = {
-      //Turn a graphic based x,y position into a logical one on an 8*8 grid
       x: e.clientX,
       y: e.clientY
     };
     //Check all chessmen and check if clicked location matches a chessman location
-    for (i = 0; i < chessmen.length; i++) {
-      if (coordsMatch(pos, chessmen[i].position.graphical)) {
+    chessmen.forEach(chessman => {
+      if (coordsMatch(pos, chessman.position.graphical)) {
         //If true, select that chessman
-        chessmen[i].hover = true;
+        chessman.hover = true;
       }
       else {
         //Otherwise, that chessman was not selected
-        chessmen[i].hover = false;
+        chessman.hover = false;
       }
-    }
+    })
     render_markers();
   }
 })
 
-let dragOk = false;
-
-let selector = document.createElement("img");
-
+//Click and drag chessmen
 chessmen_layer.addEventListener('mousedown', (e) => {
-  if (dragOk == false) {
-    let pos = {
-      //Turn a graphic based x,y position into a logical one on an 8*8 grid
-      x: e.clientX,
-      y: e.clientY
-    };
-    //Check all chessmen and check if clicked location matches a chessman location
-    for (i = 0; i < chessmen.length; i++) {
-      if (coordsMatch(pos, chessmen[i].position.graphical)) {
-        //If true, select that chessman
-        chessmen[i].selected = true;
-        chessmen[i].isDragging = true;
-        console.log(chessmen[i]);
-
-        chessmen[i].derender();
-        selector.style.position = 'absolute';
-        selector.src = chessmen[i].sprite;
-
-        document.body.append(selector);
-
-        moveAt(e.clientX, e.clientY);
-
-        // centers the selector at (pageX, pageY) coordinates
-        function moveAt(x, y) {
-          selector.style.left = x - TILE_SIZE / 2 + 'px';
-          selector.style.top = y - TILE_SIZE / 2 + 'px';
-        }
-
-        function onMouseMove(event) {
-          moveAt(event.clientX, event.clientY);
-        }
-
-        // (3) move the selector on mousemove
-        document.addEventListener('mousemove', onMouseMove);
-
-        // (4) drop the selector, remove unneeded handlers
-        chessmen_layer.onmouseup = function (upevent) {
-          document.removeEventListener('mousemove', onMouseMove);
-          //clear selector
-          selector.src = ""
-
-          let pos = {
-            x: Math.trunc(upevent.clientX / TILE_SIZE),
-            y: Math.trunc(upevent.clientY / TILE_SIZE)
-          }
-          //clear all dragging flags
-          dragOk = false;
-          chessmen.forEach(chessman => {
-            if (chessman.isDragging) {
-              console.log(pos.x, pos.y)
-              moveChessman(pos.x, pos.y, chessman);
-            }
-            chessman.isDragging = false;
-
-          })
-          chessmen_layer.onmouseup = null;
-        };
-      }
-      else {
-        //Otherwise, that chessman was not selected
-        chessmen[i].selected = false;
-      }
-    }
-
+  dragging = true; //stop markers rendering while dragging pieces
+  let pos = {
+    x: e.clientX,
+    y: e.clientY
   }
+  //Check all chessmen and check if clicked location matches a chessman location
+  chessmen.forEach(chessman => {
+    if (coordsMatch(pos, chessman.position.graphical)) {
+      if (chessman.faction == "black") {
+        dragging = false;
+        return
+      }
+      //If true, derender chessman from chessman_layer, and redraw on selector layer
+      chessman.derender();
+
+      //draw selector
+      selector.style.position = 'absolute';
+      selector.src = chessman.sprite;
+      //selector.style.zIndex = 4;
+      document.body.append(selector);
+
+      //center selector at mouse locaiton
+      moveAt(pos.x, pos.y);
+
+      function moveAt(x, y) {
+        selector.style.left = x - TILE_SIZE / 2 + 'px';
+        selector.style.top = y - TILE_SIZE / 2 + 'px';
+      }
+
+      function onMouseMove(moveEvent) {
+        moveAt(moveEvent.clientX, moveEvent.clientY);
+      }
+
+      // selector will follow mouse on movement
+      document.addEventListener('mousemove', onMouseMove);
+
+
+      // drop the selector, remove unneeded handlers
+      chessmen_layer.onmouseup = function (upevent) {
+        document.removeEventListener('mousemove', onMouseMove);
+
+        //clear selector
+        selector.src = ""
+
+        //convert mouse pos to a row/col logical value
+        let dest = {
+          x: Math.trunc(upevent.clientX / TILE_SIZE),
+          y: Math.trunc(upevent.clientY / TILE_SIZE)
+        }
+
+        //Update chessman logical location and snap to grid
+        moveChessman(dest.x, dest.y, chessman);
+        chessmen_layer.onmouseup = null;
+
+        dragging = false; // allow marker rendering to continue
+
+      };
+    }
+  })
 })
 
-selector.ondragstart = function () {
-  return false;
-};

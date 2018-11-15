@@ -25,7 +25,6 @@ function Chessman(id, type, row, col, faction) {
   this.render = function () {
     //Draws the chest piece
     let img = new Image();
-
     let x = this.position.graphical.x;
     let y = this.position.graphical.y;
 
@@ -179,9 +178,7 @@ function Chessman(id, type, row, col, faction) {
       drawRect(markers_ctx, (option.col * TILE_SIZE), (option.row * TILE_SIZE), "blue");
     })
   }
-  this.selected = false;
   this.hover = false;
-  this.isDragging = false;
 }
 
 // Update location of chest pieces
@@ -202,35 +199,34 @@ function moveIsValid(r1, r2, c1, c2, chessman) {
 
   if ((r1 == r2) && (c1 == c2)) {
     // if logical position is the same, no move was made
-    console.log("invalid move");
     valid = false;
   }
   chessman.options.forEach(option => {
     if (option.row == r2 && option.col == c2) {
       //todo check faction
-      console.log("valid move")
       valid = true;
     }
   })
-
   return valid
 }
 //Update graphical and logical position
 function moveChessman(col, row, chessman) {
-  console.log(col, row);
-  console.log(chessman.position.logical.col, chessman.position.logical.row)
   if (moveIsValid(chessman.position.logical.row, row, chessman.position.logical.col, col, chessman)) {
     //if valid, render at new position and update logical position
-    console.log("moving")
     chessman.position.logical.col = col;
     chessman.position.logical.row = row;
     chessman.position.graphical.x = chessman.position.logical.col * TILE_SIZE;
     chessman.position.graphical.y = chessman.position.logical.row * TILE_SIZE;
     chessman.render();
+
+    // trigger movement event
+    let event = new CustomEvent('moved');
+    document.dispatchEvent(event);
   }
   else {
     //re-render original position
     chessman.render();
   }
+
 
 }
