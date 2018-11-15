@@ -40,6 +40,8 @@ let turn = 0;
 let IsWhiteTurn = false;
 let IsBlackTurn = false;
 let game = true;
+let AIOptions = [];
+
 
 function set_turn() {
   if (turn % 2 == 0) {
@@ -55,6 +57,31 @@ function set_turn() {
   turn += 1;
 }
 
+function determineAIOptions() {
+  let AIOptions = [];
+  let i = 0;
+
+  chessmen.forEach(chessman => {
+    if (chessman.faction == 'black') {
+      chessman.options.forEach(option => {
+        let AIOption = {}; //dereference object
+        AIOption.row = option.row;
+        AIOption.col = option.col;
+        AIOption.chessman = chessman;
+        AIOptions[i] = AIOption;
+        i++;
+      })
+    }
+  })
+  return AIOptions;
+
+}
+
+function AIMove(options) {
+  //Return a random choice
+  let choice = options[Math.floor(Math.random() * options.length)];
+  moveChessman(choice.col, choice.row, choice.chessman)
+}
 //Set up board
 initialize_board();
 init_chessmen(default_locations);
@@ -65,18 +92,21 @@ set_turn();
 
 // Listen for movement
 document.addEventListener('moved', function (event) {
+  set_turn();
   //Calculate new movement positions
   chessmen.forEach(chessman => {
     chessman.calculate_movement_options();
   })
-  //Change turn control
-  set_turn();
+
   if (IsBlackTurn) {
     //Run black turn AI
-    console.log("Black thinking...");
+    chessmen.forEach(chessman => {
+      chessmen.options = []; //clear previous options
+      chessman.calculate_movement_options(); //assign new options
+    })
 
-    console.log("Black moved");
-    set_turn();
+    AIOptions = determineAIOptions();
+    AIMove(AIOptions);
   }
 }, false);
 

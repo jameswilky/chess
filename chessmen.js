@@ -50,7 +50,7 @@ function Chessman(id, type, row, col, faction) {
     function check_tile(row, col) {
       //Checks the status of the board to see if the chessman can move to selected tile
 
-      let option = { faction: faction };
+      let option = {}; //edited, used to hold {faction:faction}
       //Check tile does not exceed bounds of the board
       if (row > 7 || row < 0 || col > 7 || col < 0) {
         return false;
@@ -179,6 +179,9 @@ function Chessman(id, type, row, col, faction) {
     })
   }
   this.hover = false;
+  this.move = function () {
+
+  }
 }
 
 // Update location of chest pieces
@@ -212,14 +215,27 @@ function moveIsValid(r1, r2, c1, c2, chessman) {
 //Update graphical and logical position
 function moveChessman(col, row, chessman) {
   if (moveIsValid(chessman.position.logical.row, row, chessman.position.logical.col, col, chessman)) {
-    //if valid, render at new position and update logical position
+    //If valid, Check if enemy chessman has been killed
+    //check if desination contains an enemy
+    let target = chessmen.find(chessman => {
+      return (chessman.position.logical.row == row && chessman.position.logical.col == col)
+    })
+    //If destination contains emeny, remove it from list of active chessmen
+    if (target) { chessmen.splice(chessmen.indexOf(target), 1); }
+
+    // then render at new position and update logical position
+    //console.log("Changed position of", chessman, "from row:", chessman.position.logical.row, " col:", chessman.position.logical.col, " to row:", row, "col:", col)
+
+    chessman.derender();
     chessman.position.logical.col = col;
     chessman.position.logical.row = row;
     chessman.position.graphical.x = chessman.position.logical.col * TILE_SIZE;
     chessman.position.graphical.y = chessman.position.logical.row * TILE_SIZE;
+    chessman.derender();
     chessman.render();
 
-    // trigger movement event
+
+    // // trigger movement event
     let event = new CustomEvent('moved');
     document.dispatchEvent(event);
   }
