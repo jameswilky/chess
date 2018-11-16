@@ -87,9 +87,15 @@ function Chessman(id, type, row, col, faction) {
     if (this.type == "pawn") {
       if (this.faction == "black") {
         check_tile(r + 1, c);
+        if (this.nMoves == 0) {
+          check_tile(r + 2, c); //Extra move on first turn
+        }
       }
       if (this.faction == "white") {
         check_tile(r - 1, c);
+        if (this.nMoves == 0) {
+          check_tile(r - 2, c); //Extra move on first turn
+        }
       }
     }
     if (this.type == "rook") {
@@ -180,10 +186,33 @@ function Chessman(id, type, row, col, faction) {
     })
   }
   this.hover = false;
-  //Update graphical and logical position
-  this.move = function (col, row) {
+  this.isKing = false;
+  if (this.type == "king") {
+    this.isKing = true;
+  }
 
-    if (moveIsValid(this.position.logical.row, row, this.position.logical.col, col, this)) {
+  this.nMoves = 0;
+
+  //Update graphical and logical position
+  this.moveTo = function (col, row) {
+
+    function moveIsValid(r1, r2, c1, c2, options) {
+      let valid = false;
+
+      if ((r1 == r2) && (c1 == c2)) {
+        // if logical position is the same, no move was made
+        valid = false;
+      }
+      options.forEach(option => {
+        if (option.row == r2 && option.col == c2) {
+          //todo check faction
+          valid = true;
+        }
+      })
+      return valid
+    }
+
+    if (moveIsValid(this.position.logical.row, row, this.position.logical.col, col, this.options)) {
       //If valid, Check if enemy chessman has been killed
 
       //check if desination contains an enemy
@@ -204,6 +233,7 @@ function Chessman(id, type, row, col, faction) {
       this.derender();
       this.render();
 
+      this.nMoves++; //used to testing if pawn is moved
       // // trigger movement event
       let event = new CustomEvent('moved');
       document.dispatchEvent(event);
@@ -232,51 +262,18 @@ function render_markers() {
 
 }
 
-function moveIsValid(r1, r2, c1, c2, chessman) {
-  let valid = false;
+// function moveIsValid(r1, r2, c1, c2, chessman) {
+//   let valid = false;
 
-  if ((r1 == r2) && (c1 == c2)) {
-    // if logical position is the same, no move was made
-    valid = false;
-  }
-  chessman.options.forEach(option => {
-    if (option.row == r2 && option.col == c2) {
-      //todo check faction
-      valid = true;
-    }
-  })
-  return valid
-}
-// //Update graphical and logical position
-// function moveChessman(col, row, chessman) {
-//   if (moveIsValid(chessman.position.logical.row, row, chessman.position.logical.col, col, chessman)) {
-//     //If valid, Check if enemy chessman has been killed
-//     //check if desination contains an enemy
-//     let target = chessmen.find(chessman => {
-//       return (chessman.position.logical.row == row && chessman.position.logical.col == col)
-//     })
-//     //If destination contains emeny, remove it from list of active chessmen
-//     if (target) { chessmen.splice(chessmen.indexOf(target), 1); }
-
-//     // then render at new position and update logical position
-//     //console.log("Changed position of", chessman, "from row:", chessman.position.logical.row, " col:", chessman.position.logical.col, " to row:", row, "col:", col)
-
-//     chessman.derender();
-//     chessman.position.logical.col = col;
-//     chessman.position.logical.row = row;
-//     chessman.position.graphical.x = chessman.position.logical.col * TILE_SIZE;
-//     chessman.position.graphical.y = chessman.position.logical.row * TILE_SIZE;
-//     chessman.derender();
-//     chessman.render();
-
-//     // // trigger movement event
-//     let event = new CustomEvent('moved');
-//     document.dispatchEvent(event);
+//   if ((r1 == r2) && (c1 == c2)) {
+//     // if logical position is the same, no move was made
+//     valid = false;
 //   }
-//   else {
-//     //re-render original position
-//     chessman.render();
-//   }
-
-
+//   chessman.options.forEach(option => {
+//     if (option.row == r2 && option.col == c2) {
+//       //todo check faction
+//       valid = true;
+//     }
+//   })
+//   return valid
 // }

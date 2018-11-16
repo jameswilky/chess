@@ -79,7 +79,9 @@ function determineAIOptions() {
 function AIMove(options) {
   //Return a random choice
   let choice = options[Math.floor(Math.random() * options.length)];
-  choice.chessman.move(choice.col, choice.row)
+  choice.chessman.moveTo(choice.col, choice.row)
+
+  //calculate AI
 }
 
 
@@ -90,11 +92,19 @@ chessmen.forEach(chessman => {
   chessman.calculate_movement_options();
 })
 set_turn();
+function checkKing() {
+  let kings = chessmen.filter(chessman => chessman.isKing == true)
+  if (kings.length == 1) {
+    alert(kings[0].faction + " Wins!!!")
+  }
+}
 
 // Listen for movement
 document.addEventListener('moved', function (event) {
+  //check if king died last turn;
+  checkKing();
   set_turn();
-  //Calculate new movement positions
+  //Calculate new movement positiifons
   chessmen.forEach(chessman => {
     chessman.calculate_movement_options();
   })
