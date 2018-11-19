@@ -1,5 +1,6 @@
-let selector = document.createElement("img");
 let dragging = false;
+let selector = document.createElement("img");
+;
 
 selector.ondragstart = function () {
   return false;
@@ -47,6 +48,7 @@ chessmen_layer.addEventListener('mousemove', (e) => {
 
 //Click and drag chessmen
 chessmen_layer.addEventListener('mousedown', (e) => {
+
   dragging = true; //stop markers rendering while dragging pieces
   let pos = {
     x: e.clientX,
@@ -65,7 +67,7 @@ chessmen_layer.addEventListener('mousedown', (e) => {
       //draw selector
       selector.style.position = 'absolute';
       selector.src = chessman.sprite;
-      //selector.style.zIndex = 4;
+      selector.id = 'selector';
       document.body.append(selector);
 
       //center selector at mouse locaiton
@@ -90,6 +92,9 @@ chessmen_layer.addEventListener('mousedown', (e) => {
 
         //clear selector
         selector.src = ""
+        // console.log("before", document.getElementById('selector'))
+        // document.body.removeChild(document.getElementById('selector'))
+        // console.log("after", document.getElementById('selector'))
 
         //convert mouse pos to a row/col logical value
         let dest = {
@@ -97,14 +102,14 @@ chessmen_layer.addEventListener('mousedown', (e) => {
           y: Math.trunc(upevent.clientY / TILE_SIZE)
         }
 
+        //console.log("Event 1")
+        dragging = false; // allow marker rendering to continue
+        chessmen_layer.onmouseup = null;
         //Update chessman logical location and snap to grid
         chessman.moveTo(dest.x, dest.y)
-        chessmen_layer.onmouseup = null;
-
-        dragging = false; // allow marker rendering to continue
-
       };
     }
   })
 })
+
 

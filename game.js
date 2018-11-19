@@ -47,12 +47,12 @@ function set_turn() {
   if (turn % 2 == 0) {
     IsWhiteTurn = true;
     IsBlackTurn = false;
-    console.log("White players turn")
+    //console.log("White players turn")
   }
   else {
     IsBlackTurn = true;
     IsWhiteTurn = false;
-    console.log("Black players turn")
+    //console.log("Black players turn")
   }
   turn += 1;
 }
@@ -66,6 +66,9 @@ function determineAIOptions() {
         let AIOption = {}; //dereference object
         AIOption.row = option.row;
         AIOption.col = option.col;
+        if (option.contains) {
+          AIOption.points = option.contains.points;
+        }
         AIOption.chessman = chessman;
         AIOptions[i] = AIOption;
         i++;
@@ -77,10 +80,20 @@ function determineAIOptions() {
 }
 
 function AIMove(options) {
-  //Return a random choice
-  let choice = options[Math.floor(Math.random() * options.length)];
+  let max = 0;
+  let choice = {};
+  options.forEach(option => {
+    if (option.points) {
+      if (option.points > max) {
+        max = option.points;
+        choice = option;
+      }
+    }
+  })
+  if (max == 0) {
+    choice = options[Math.floor(Math.random() * options.length)];  //Return a random choice
+  }
   choice.chessman.moveTo(choice.col, choice.row)
-
   //calculate AI
 }
 

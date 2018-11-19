@@ -30,12 +30,16 @@ function Chessman(id, type, row, col, faction) {
 
     img.onload = function () {
       //Loads when img.src is called
+      chessmen_ctx.beginPath();
       chessmen_ctx.drawImage(img, x, y);
+      chessmen_ctx.closePath();
     }
     img.src = this.sprite;
   }
   this.derender = function () {
+    chessmen_ctx.beginPath();
     chessmen_ctx.clearRect(this.position.graphical.x, this.position.graphical.y, TILE_SIZE, TILE_SIZE);
+    chessmen_ctx.closePath();
   }
   this.calculate_movement_options = function () {
     //This function is used to determine the coordinates of each possible move for a selected tile
@@ -48,7 +52,9 @@ function Chessman(id, type, row, col, faction) {
 
     let options = this.options;
 
-    function check_tile(row, col) {
+    function check_tile(row, col, diag) {
+      //diag is an optional variable for pawn sideways movement logic
+      diag = diag || false;
       //Checks the status of the board to see if the chessman can move to selected tile
 
       let option = {}; //edited, used to hold {faction:faction}
@@ -69,11 +75,22 @@ function Chessman(id, type, row, col, faction) {
           else { //tile is occupied by enemy
             isEnemy = true;
           }
+          option.contains = chessman;
         }
       })
 
+      //pawn logic
+      if (diag && isEnemy) {
+        option.row = row;
+        option.col = col;
+        options[i] = option;
+        i++;
+        console.log('found target')
+        return
+      }
+
       //if tile does not contain friendly chessmen, or if its an enemy create new option
-      if (!isFriendly || isEnemy) {
+      if ((!isFriendly || isEnemy) && !diag) {
         option.row = row;
         option.col = col;
         options[i] = option;
@@ -86,13 +103,17 @@ function Chessman(id, type, row, col, faction) {
 
     if (this.type == "pawn") {
       if (this.faction == "black") {
-        check_tile(r + 1, c);
+        check_tile(r + 1, c);//south
+        check_tile(r + 1, c + 1, true) // south East
+        check_tile(r + 1, c - 1, true) //south West
         if (this.nMoves == 0) {
           check_tile(r + 2, c); //Extra move on first turn
         }
       }
       if (this.faction == "white") {
-        check_tile(r - 1, c);
+        check_tile(r - 1, c); //north
+        check_tile(r - 1, c + 1, true) // North East
+        check_tile(r - 1, c - 1, true) //North West
         if (this.nMoves == 0) {
           check_tile(r - 2, c); //Extra move on first turn
         }
@@ -177,7 +198,6 @@ function Chessman(id, type, row, col, faction) {
 
     //return array of options containing locations to highlight
 
-
   }
   this.show_movement_options = function () {
     this.options.forEach(option => {
@@ -192,9 +212,29 @@ function Chessman(id, type, row, col, faction) {
   }
 
   this.nMoves = 0;
+  this.points;
+  if (this.type == "king") {
+    this.points = 10;
+  }
+  if (this.type == "queen") {
+    this.points = 9;
+  }
+  if (this.type == "bishop") {
+    this.points = 3;
+  }
+  if (this.type == "knight") {
+    this.points = 3;
+  }
+  if (this.type == "rook") {
+    this.points = 5;
+  }
+  if (this.type == "pawn") {
+    this.points = 1;
+  }
 
   //Update graphical and logical position
   this.moveTo = function (col, row) {
+
 
     function moveIsValid(r1, r2, c1, c2, options) {
       let valid = false;
@@ -214,24 +254,26 @@ function Chessman(id, type, row, col, faction) {
 
     if (moveIsValid(this.position.logical.row, row, this.position.logical.col, col, this.options)) {
       //If valid, Check if enemy chessman has been killed
-
       //check if desination contains an enemy
       let target = chessmen.find(chessman => {
         return (chessman.position.logical.row == row && chessman.position.logical.col == col)
       })
-      //If destination contains emeny, remove it from list of active chessmen
-      if (target) { chessmen.splice(chessmen.indexOf(target), 1); }
 
       // then render at new position and update logical position
       //console.log("Changed position of", chessman, "from row:", chessman.position.logical.row, " col:", chessman.position.logical.col, " to row:", row, "col:", col)
 
-      this.derender();
+      this.derender(); //De render previous position
       this.position.logical.col = col;
       this.position.logical.row = row;
       this.position.graphical.x = this.position.logical.col * TILE_SIZE;
       this.position.graphical.y = this.position.logical.row * TILE_SIZE;
-      this.derender();
+      this.derender(); //remove any chess pieces
       this.render();
+
+      //If destination contains emeny, remove it from list of active chessmen
+      if (target) {
+        chessmen.splice(chessmen.indexOf(target), 1);
+      }
 
       this.nMoves++; //used to testing if pawn is moved
       // // trigger movement event
@@ -242,8 +284,6 @@ function Chessman(id, type, row, col, faction) {
       //re-render original position
       this.render();
     }
-
-
   }
 }
 
@@ -262,18 +302,3 @@ function render_markers() {
 
 }
 
-// function moveIsValid(r1, r2, c1, c2, chessman) {
-//   let valid = false;
-
-//   if ((r1 == r2) && (c1 == c2)) {
-//     // if logical position is the same, no move was made
-//     valid = false;
-//   }
-//   chessman.options.forEach(option => {
-//     if (option.row == r2 && option.col == c2) {
-//       //todo check faction
-//       valid = true;
-//     }
-//   })
-//   return valid
-// }
