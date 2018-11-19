@@ -52,9 +52,11 @@ function Chessman(id, type, row, col, faction) {
 
     let options = this.options;
 
-    function check_tile(row, col, diag) {
+    function check_tile(row, col, diag, isPawn) {
       //diag is an optional variable for pawn sideways movement logic
       diag = diag || false;
+      isPawn = isPawn || false;
+
       //Checks the status of the board to see if the chessman can move to selected tile
 
       let option = {}; //edited, used to hold {faction:faction}
@@ -86,17 +88,18 @@ function Chessman(id, type, row, col, faction) {
         options[i] = option;
         i++;
         console.log('found target')
+      }
+      if (diag && !isEnemy) {
         return
       }
 
       //if tile does not contain friendly chessmen, or if its an enemy create new option
-      if ((!isFriendly || isEnemy) && !diag) {
+      if (!isFriendly || isEnemy) {
         option.row = row;
         option.col = col;
         options[i] = option;
         i++;
       }
-
       return isFriendly || isEnemy;
 
     }
