@@ -15,7 +15,7 @@ This objective of this project to practice my vanilla javascript and OOP skills,
 10. ~~Give the AI the ability to randomly move one piece in any legal direction on its turn~~
 11. ~~Allow pawns to move two spaces from start location~~
 12. Allow pawns the get to the end of the opposing board to revive the queen
-13. ~~NEW Give AI to chose best move for each turn~~
+13. ~~NEW Give AI ability to chose best move for each turn~~
 
 
 # Sprint 1:
@@ -36,4 +36,6 @@ This objective of this project to practice my vanilla javascript and OOP skills,
 
 # Sprint 3:
   User stories: ~~8~~,~~9~~,~~11~~,12
+
+  ## Final 
 

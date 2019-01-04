@@ -51,12 +51,16 @@ function Chessman(id, type, row, col, faction) {
     let c = this.position.logical.col;
 
     let options = this.options;
+    let piece = this;
 
-    function check_tile(row, col, diag, isPawn) {
+    function check_tile(row, col, diag) {
       //diag is an optional variable for pawn sideways movement logic
       diag = diag || false;
-      isPawn = isPawn || false;
+      let isPawn = false;
+      if (piece.type == "pawn") {
+        isPawn = true;
 
+      }
       //Checks the status of the board to see if the chessman can move to selected tile
 
       let option = {}; //edited, used to hold {faction:faction}
@@ -87,9 +91,11 @@ function Chessman(id, type, row, col, faction) {
         option.col = col;
         options[i] = option;
         i++;
-        console.log('found target')
       }
       if (diag && !isEnemy) {
+        return
+      }
+      if (isPawn && !diag && isEnemy) {
         return
       }
 
@@ -205,7 +211,7 @@ function Chessman(id, type, row, col, faction) {
   this.show_movement_options = function () {
     this.options.forEach(option => {
       //Represent each available movement option with a highlighted tile
-      drawRect(markers_ctx, (option.col * TILE_SIZE), (option.row * TILE_SIZE), "blue");
+      drawRect(markers_ctx, (option.col * TILE_SIZE), (option.row * TILE_SIZE), COL3);
     })
   }
   this.hover = false;
