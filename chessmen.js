@@ -20,7 +20,7 @@ function Chessman(id, type, row, col, faction) {
     }
   }
   this.faction = faction;
-  this.sprite = "/images/" + type + "_" + faction + ".png";
+  this.sprite = "images/" + type + "_" + faction + ".png";
   this.options = []; // holds objects containing possible locations to move
   this.render = function () {
     //Draws the chest piece
