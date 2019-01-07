@@ -1,0 +1,14 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+canvas {
+  background: red;
+  display: block;
+  margin: 0 auto;
+}
+
+#board {
+  position: absolute; left : 0; z-index:0;
+}

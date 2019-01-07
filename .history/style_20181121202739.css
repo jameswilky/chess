@@ -1,0 +1,32 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.game{
+  position
+  height: 480px;
+  width: 480px;
+  grid-area: game;
+  margin:auto;
+}
+
+#board {
+  left : 0; z-index:0; position: absolute;
+}
+
+#markers {
+  left : 0; z-index:0; position: absolute;
+}
+
+#chessmen_layer {
+ left : 0; z-index:1; position: absolute;
+}
+
+header{
+  background-color: red;
+}
+
+footer{
+  background-color: green;
+}

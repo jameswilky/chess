@@ -1,0 +1,1 @@
+let chessmen = []; // Hold living chest piece objects

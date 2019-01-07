@@ -1,0 +1,22 @@
+{
+  "name": "chess",
+  "version": "1.0.0",
+  "description": "Chess game built in vanilla javascript",
+  "main": "index.js",
+  "scripts": {
+    "deplot": "gh-pages -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jameswilky/chess.git"
+  },
+  "author": "James Wilkinson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jameswilky/chess/issues"
+  },
+  "homepage": "https://jameswilky.github.io./chess",
+  "dependencies": {
+    "gh-pages": "^2.0.1"
+  }
+}

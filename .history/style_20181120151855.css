@@ -1,0 +1,65 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.game{
+  position: relative;
+  height: 480px;
+  width: 480px;
+  grid-area: game;
+  margin:auto;
+}
+canvas {
+}
+
+#board {
+  left : 0; z-index:0; position: absolute;
+}
+
+#markers {
+  left : 0; z-index:0; position: absolute;
+}
+
+#chessmen_layer {
+ left : 0; z-index:1; position: absolute;
+}
+
+.wrapper{
+  display: grid;
+
+  grid-template-areas: 
+  "header header header"
+  "space1 main space2" 
+  "footer footer footer"
+}
+.wrapper > div{
+  background: #eee;
+  padding: 1em;
+}
+
+/* .wrapper >div:nth-child(odd){
+  background: #ddd;
+} */
+
+.header {
+  grid-area: header;
+  position: absolute;
+}
+
+.main {
+  grid-area: main;
+}
+
+.footer{
+  grid-area: footer;
+  position: absolute;
+}
+
+.space1 {
+  grid-area: space1;
+}
+.space2 {
+  grid-area: space2;
+
+}

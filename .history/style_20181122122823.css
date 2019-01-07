@@ -1,0 +1,66 @@
+*{
+font-family:Tahoma, Geneva, sans-serif;
+color: #635e55;
+}
+
+.main{
+ position: absolute;
+ top: 9%;
+ bottom: 9%;
+ right:0;
+ left:0;
+ overflow: hidden;
+ background-color: #f2e9d7;
+}
+
+header > h1{
+  margin: 2em 0 0 0 ;
+}
+
+#game{
+  position: absolute;
+  top:50%;
+  left: 50%;
+  margin-left:-240px;
+  margin-top:-240px;
+  height: 480px;
+  width: 480px;
+}
+
+#board {
+  left : 0; z-index:0; position: absolute;
+}
+
+#markers {
+  left : 0; z-index:0; position: absolute;
+}
+
+#chessmen_layer {
+ left : 0; z-index:1; position: absolute;
+}
+
+header{
+  position: absolute;
+  top:0;
+  right: 0;
+  left: 0;
+  height: 9%;
+  background-color: #ddcba6;
+}
+
+footer{
+  text-align: center;
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  left: 0;
+  height: 9%;
+  bottom: 0;
+  background-color: #ddcba6;
+  color: #f2e9d7;
+}
+
+footer > .icons{
+  margin: auto;
+  width:200px;
+}
