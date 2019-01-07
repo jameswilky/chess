@@ -4,7 +4,7 @@
   "description": "Chess game built in vanilla javascript",
   "main": "index.js",
   "scripts": {
-    "deplot": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
